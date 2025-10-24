@@ -11,7 +11,7 @@ namespace KPP_Alpha1
         //O aplikaciji
         string MB_NazivAplikacija = "O aplikaciji KPP";
         string appName = "Knjiga primljenih pošiljki (KPP)";
-        string appVersion = "Version 1.0.0.0";
+        string appVersion = "Version 4.0.0.0";
         string appAuthor = "Miroslav Vranić";
         string aboutApp = "Aplikcaija Knjiga primljenih pošiljki je napravaljena kao projekt na predmetu Objektno orijentirano programiranje 2 " +
             "na TVZ-u godina 2017/2018";

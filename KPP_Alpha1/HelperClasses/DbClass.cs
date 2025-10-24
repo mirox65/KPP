@@ -4,6 +4,7 @@ using System.Data;
 using System.Data.OleDb;
 using System.Text;
 using System.Windows.Forms;
+using KPP_Alpha1.HelperClasses;
 
 namespace KPP_Alpha1
 {
@@ -357,6 +358,83 @@ namespace KPP_Alpha1
                 conn.Close();
             }
             return dict;
+        }
+
+        #endregion
+
+        #region NEW STATIC HELPER METHODS (T017-T019)
+
+        private static readonly string connectionString = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=|DataDirectory|\\KPP.accdb; Jet OLEDB:Database Password=SunceJeLijepo1#;";
+
+        /// <summary>
+        /// Tests database connectivity. Returns true if connection successful.
+        /// </summary>
+        public static bool TestConnection(out string errorMsg)
+        {
+            try
+            {
+                using (var conn = new OleDbConnection(connectionString))
+                {
+                    conn.Open();
+                    errorMsg = string.Empty;
+                    return true;
+                }
+            }
+            catch (Exception ex)
+            {
+                errorMsg = "Baza podataka nije dostupna: " + ex.Message;
+                LogHelper.LogError("DbClass.TestConnection", errorMsg, ex);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Executes scalar query and returns single value.
+        /// </summary>
+        public static object ExecuteScalar(string sql, Dictionary<string, object> parameters)
+        {
+            try
+            {
+                using (var conn = new OleDbConnection(connectionString))
+                using (var cmd = new OleDbCommand(sql, conn))
+                {
+                    if (parameters != null)
+                    {
+                        foreach (var param in parameters)
+                            cmd.Parameters.AddWithValue(param.Key, param.Value);
+                    }
+                    
+                    conn.Open();
+                    return cmd.ExecuteScalar();
+                }
+            }
+            catch (Exception ex)
+            {
+                LogHelper.LogError("DbClass.ExecuteScalar", sql, ex);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Checks if a record with specified field value exists.
+        /// </summary>
+        public static bool RecordExists(string tableName, string fieldName, object fieldValue, int? excludeId = null)
+        {
+            string sql = $"SELECT COUNT(*) FROM {tableName} WHERE {fieldName} = @value";
+            
+            if (excludeId.HasValue)
+                sql += " AND Id <> @excludeId";
+            
+            var parameters = new Dictionary<string, object>
+            {
+                { "@value", fieldValue }
+            };
+            
+            if (excludeId.HasValue)
+                parameters.Add("@excludeId", excludeId.Value);
+            
+            int count = Convert.ToInt32(ExecuteScalar(sql, parameters));
+            return count > 0;
         }
 
         #endregion

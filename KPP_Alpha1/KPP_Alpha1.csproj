@@ -109,6 +109,10 @@
     </Compile>
     <Compile Include="HelperClasses\DbClass.cs" />
     <Compile Include="HelperClasses\EditClass.cs" />
+    <Compile Include="HelperClasses\LogHelper.cs" />
+    <Compile Include="HelperTests.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
